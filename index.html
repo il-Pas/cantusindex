@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Search results</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<?php
+
+// Initialize variable for database credentials
+$dbhost = '31.11.39.30';
+$dbuser = 'Sql1511106';
+$dbpass = '23jl7b66l1';
+$dbname = 'Sql1511106_3';
+
+if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
+$url = "https://";   
+else  
+$url = "http://";   
+// Append the host(domain name, ip) to the URL.   
+$url.= $_SERVER['HTTP_HOST'];   
+
+// Append the requested resource location to the URL   
+$url.= $_SERVER['REQUEST_URI'];
+
+$url_components = parse_url($url, PHP_URL_PATH);
+
+// Use parse_str() function to parse the
+// string passed via URL
+//parse_str($url_components['query'], $params);
+
+$cid = str_replace("/", "", $url_components);
+    //open connection to mysql db
+    $connection = mysqli_connect($dbhost,$dbuser,$dbpass,$dbname) or die("Error " . mysqli_error($connection));
+
+    //fetch table rows from mysql db
+    $sql = "select * from cid as C where C.cid = '".$cid."'";
+    $result = mysqli_query($connection, $sql) or die("Error in Selecting " . mysqli_error($connection));
+
+    //create an array
+    $emparray = array();
+    while($row =mysqli_fetch_assoc($result))
+    {
+        $emparray[] = $row;
+    }
+    echo json_encode($emparray);
+
+    //close the db connection
+    mysqli_close($connection);
+?>
+</body>
+</html>
